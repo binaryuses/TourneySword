@@ -1,3 +1,4 @@
+---@diagnostic disable: unused-function
 --[[
 	stfo tourney swords
 	written by StrangeEggs
@@ -13,6 +14,7 @@ local tool = script.Parent
 local handle = tool.Handle
 local config = require(tool.Config)
 local damage = config.Damage.Idle
+local statName = config.Leaderstat
 
 local sounds = {
 	Slash = handle.Slash;
@@ -42,6 +44,11 @@ local function canDamage(hit: BasePart)
 	-- Check if it's a player or an NPC
 	local hitPlayer = Players:GetPlayerFromCharacter(character)
 	if hitPlayer == nil and not config.DamageNPCs then
+		return false
+	end
+
+	-- Check if they are already dead
+	if character:FindFirstChildWhichIsA("Humanoid").Health <= 0 then
 		return false
 	end
 
@@ -107,6 +114,25 @@ local function lunge()
 	tool.Grip = config.Grips.Up
 end
 
+local function takeDamage(wielder: Player, humanoid: Humanoid, damage: IntValue)
+	humanoid:TakeDamage(damage)
+
+	-- Check if the wielder and statName are valid
+	if humanoid.Health <= 0 and statName and statName ~= "OFF" and wielder then
+		local folder = wielder:FindFirstChild("leaderstats") 
+		if folder then
+			local stat = folder:FindFirstChild(statName)
+			if stat then
+				stat.Value = stat.Value + 1
+			else
+				error("Couldn't add leaderstat to " .. wielder.Name .. " - Did you forget to change the leaderstat name?")
+			end
+		else
+			warn("Leaderstats folder not found - Make sure you have leaderstats built into your game!")
+		end
+	end
+end
+
 local function blow(hit)
 	local character = tool.Parent
 	local humanoid = hit.Parent:FindFirstChild("Humanoid")
@@ -122,8 +148,7 @@ local function blow(hit)
 	if humanoid and humanoid ~= character.Humanoid and canDamage(hit) then
 		untagHumanoid(humanoid)
 		tagHumanoid(humanoid, wielder, hit)
-
-		humanoid:TakeDamage(damage)
+		takeDamage(wielder, humanoid, damage)
 	end
 end
 
