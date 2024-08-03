@@ -1,4 +1,3 @@
----@diagnostic disable: unused-function
 --[[
 	stfo tourney swords
 	written by StrangeEggs
