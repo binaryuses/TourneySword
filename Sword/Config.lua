@@ -8,7 +8,7 @@ return {
 	ForceTie = false; -- Force tie (allows sword to still do damage after a player dies)
 	DamageNPCs = true; -- Allows the sword to damage non-players
 	ForceFieldDamage = false; -- Ability to damage while having a forcefield
-	Leaderstat = "ENTER NAME HERE"; -- Name of the leaderstat to increase upon killing ("OFF" if you dont have any)   
+	HealAmount = 25; -- Amount of HP given after a kill (0 If you want heals off)
 	Float = false; -- Sword lunge float
 	TourneyMode = false; -- Tourney only functionality, this will break the sword outside of the tourney place!
 	Grips = {

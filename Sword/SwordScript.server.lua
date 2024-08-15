@@ -13,7 +13,7 @@ local tool = script.Parent
 local handle = tool.Handle
 local config = require(tool.Config)
 local damage = config.Damage.Idle
-local statName = config.Leaderstat
+local healAmount = config.HealAmount
 
 local sounds = {
 	Slash = handle.Slash;
@@ -116,19 +116,10 @@ end
 local function takeDamage(wielder: Player, humanoid: Humanoid, damage: IntValue)
 	humanoid:TakeDamage(damage)
 
-	-- Check if the wielder and statName are valid
-	if humanoid.Health <= 0 and statName and statName ~= "OFF" and wielder then
-		local folder = wielder:FindFirstChild("leaderstats") 
-		if folder then
-			local stat = folder:FindFirstChild(statName)
-			if stat then
-				stat.Value = stat.Value + 1
-			else
-				error("Couldn't add leaderstat to " .. wielder.Name .. " - Did you forget to change the leaderstat name?")
-			end
-		else
-			warn("Leaderstats folder not found - Make sure you have leaderstats built into your game!")
-		end
+	-- Heal the player
+	if humanoid.Health <= 0 and wielder and healAmount > 0 then
+		local currentHealth = wielder.Character.Humanoid.Health
+		wielder.Character.Humanoid.Health = math.min(currentHealth + healAmount, 100)
 	end
 end
 
@@ -143,7 +134,6 @@ local function blow(hit)
 	if not config.ForceFieldDamage and character:FindFirstChildOfClass("ForceField") then
 		return
 	end
-
 	if humanoid and humanoid ~= character.Humanoid and canDamage(hit) then
 		untagHumanoid(humanoid)
 		tagHumanoid(humanoid, wielder, hit)
